@@ -7,6 +7,8 @@ import 'firebase_options.dart';
 // 1. Import the native splash package
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:ecommerce_app/screens/auth_wrapper.dart';
+import 'package:ecommerce_app/providers/cart_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // 1. Make the 'main' function asynchronous
@@ -24,11 +26,19 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 5. Run the app (this line is already here)
-  runApp(MyApp());
-
   // 4. Remove the splash screen after app is ready
   FlutterNativeSplash.remove();
+
+  // 5. Run the app (this line is already here)
+  runApp(
+    // 2. We wrap our app in the provider
+    ChangeNotifierProvider(
+      // 3. This "creates" one instance of our cart
+      create: (context) => CartProvider(),
+      // 4. The child is our normal app
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
