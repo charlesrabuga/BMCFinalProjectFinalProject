@@ -9,6 +9,15 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:ecommerce_app/screens/auth_wrapper.dart';
 import 'package:ecommerce_app/providers/cart_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// 2. --- ADD OUR NEW APP COLOR PALETTE ---
+const Color kRichBlack = Color(0xFF1D1F24); // A dark, rich black
+const Color kBrown = Color(0xFF8B5E3C); // Our main "coffee" brown
+const Color kLightBrown = Color(0xFFD2B48C); // A lighter tan/beige
+const Color kOffWhite = Color(0xFFF8F4F0); // A warm, off-white background
+// --- END OF COLOR PALETTE ---
 
 void main() async {
   // 1. Make the 'main' function asynchronous
@@ -26,23 +35,26 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 4. Remove the splash screen after app is ready
-  FlutterNativeSplash.remove();
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
-  // 5. Run the app (this line is already here)
+  final cartProvider = CartProvider();
+  cartProvider.initializeAuthListener();
+  // 7. This is the NEW code for runApp
   runApp(
-    // 2. We wrap our app in the provider
-    ChangeNotifierProvider(
-      // 3. This "creates" one instance of our cart
-      create: (context) => CartProvider(),
-      // 4. The child is our normal app
+    // 8. We use ChangeNotifierProvider.value
+    ChangeNotifierProvider.value(
+      value: cartProvider, // 9. We provide the instance we already created
       child: MyApp(),
     ),
   );
+
+  // 10. Remove splash screen (Unchanged)
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
   // ... (const MyApp)
+  //const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
